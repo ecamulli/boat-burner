@@ -344,6 +344,47 @@
     }
     .copy-btn:hover { border-color: var(--bg-active); color: var(--bg-active); }
 
+    /* ── CONFIG BANNER ── */
+    .config-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--neutral-100);
+      border: 1px solid var(--stroke);
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--neutral-500);
+    }
+    .config-banner.success { border-color: oklch(71.2% 0.098 165); color: oklch(40% 0.09 165); }
+    .config-banner.success { background: oklch(96% 0.02 165); }
+    @media (prefers-color-scheme: dark) {
+      .config-banner.success { background: oklch(25% 0.03 165); color: oklch(71.2% 0.098 165); }
+    }
+    .config-banner-icon { font-size: 16px; flex-shrink: 0; }
+    .config-banner strong { font-weight: 600; }
+
+    .file-upload-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--stroke);
+      border-radius: 4px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--neutral-500);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: all 0.2s;
+      margin-top: 12px;
+    }
+    .file-upload-label:hover { border-color: var(--bg-active); color: var(--bg-active); }
+    #config-file-input { display: none; }
+
     /* ── UTILS ── */
     .hidden { display: none !important; }
 
@@ -376,9 +417,24 @@
         <p>One task per line. We'll walk you through pairwise comparisons to rank them.</p>
       </div>
       <div class="card-body">
+        <!-- Config status banner -->
+        <div id="config-banner" class="config-banner hidden">
+          <span class="config-banner-icon" id="config-banner-icon"></span>
+          <span id="config-banner-msg"></span>
+        </div>
+
         <label for="task-input">Tasks / Items to Prioritize</label>
         <textarea id="task-input" placeholder="Update the website&#10;Call the client&#10;Finish the proposal&#10;Review the budget&#10;Schedule team meeting"></textarea>
         <p class="hint">Tip: 5–15 items works best. Too many pairs can get tedious!</p>
+
+        <!-- Manual config upload fallback -->
+        <div id="upload-fallback" class="hidden">
+          <label class="file-upload-label" for="config-file-input">
+            📂 Load a config.txt instead
+          </label>
+          <input type="file" id="config-file-input" accept=".txt" onchange="loadConfigFile(event)" />
+        </div>
+
         <button class="btn" onclick="startComparisons()">🔥 Start Prioritizing</button>
       </div>
     </div>
@@ -442,6 +498,66 @@
   let currentPair = 0;
   let wins = {};
 
+  // ── CONFIG LOADING ──────────────────────────────────────────────
+
+  function applyConfig(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length === 0) return;
+
+    // First line is the title; rest are tasks
+    const title = lines[0];
+    const taskLines = lines.slice(1);
+
+    // Update header title
+    document.querySelector('header h1').textContent = title.toUpperCase();
+    document.title = title + ' — Boat Burner';
+
+    // Pre-populate textarea if tasks provided
+    if (taskLines.length > 0) {
+      document.getElementById('task-input').value = taskLines.join('\n');
+    }
+  }
+
+  function showBanner(type, icon, msg) {
+    const banner = document.getElementById('config-banner');
+    const iconEl = document.getElementById('config-banner-icon');
+    const msgEl  = document.getElementById('config-banner-msg');
+    banner.className = 'config-banner ' + type;
+    iconEl.textContent = icon;
+    msgEl.innerHTML = msg;
+    banner.classList.remove('hidden');
+  }
+
+  async function autoLoadConfig() {
+    try {
+      const res = await fetch('config.txt');
+      if (!res.ok) throw new Error('Not found');
+      const text = await res.text();
+      applyConfig(text);
+      showBanner('success', '✅', '<strong>config.txt loaded</strong> — tasks pre-populated from your config file.');
+    } catch (e) {
+      // Auto-load failed — show upload fallback silently
+      document.getElementById('upload-fallback').classList.remove('hidden');
+    }
+  }
+
+  function loadConfigFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      applyConfig(e.target.result);
+      showBanner('success', '✅', `<strong>${escHtml(file.name)}</strong> loaded — tasks pre-populated.`);
+      document.getElementById('upload-fallback').classList.add('hidden');
+    };
+    reader.readAsText(file);
+  }
+
+  // Run on page load
+  autoLoadConfig();
+
+  // ── PRIORITIZATION LOGIC ────────────────────────────────────────
+
   function startComparisons() {
     const raw = document.getElementById('task-input').value.trim();
     if (!raw) { alert('Please enter at least 2 tasks.'); return; }
@@ -452,17 +568,13 @@
       if (!confirm(`You have ${tasks.length} tasks — that's ${tasks.length*(tasks.length-1)/2} comparisons. Continue?`)) return;
     }
 
-    // Build all unique pairs
     pairs = [];
     for (let i = 0; i < tasks.length; i++) {
       for (let j = i + 1; j < tasks.length; j++) {
         pairs.push([i, j]);
       }
     }
-    // Shuffle pairs for variety
     pairs = pairs.sort(() => Math.random() - 0.5);
-
-    // Randomize which side each item appears on
     pairs = pairs.map(p => Math.random() > 0.5 ? [p[1], p[0]] : p);
 
     wins = {};
@@ -540,7 +652,6 @@
   }
 
   function restartSameTasks() {
-    // Rebuild pairs from same task list but reshuffled
     pairs = [];
     for (let i = 0; i < tasks.length; i++) {
       for (let j = i + 1; j < tasks.length; j++) {

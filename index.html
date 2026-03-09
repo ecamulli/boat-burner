@@ -618,7 +618,7 @@
   // ── SUBMIT TO GOOGLE SHEETS ─────────────────────────────
 
   async function submitResults(ranked) {
-    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxBaC6MQ3tv7_EyxSBvzZm3lEudXOj8vNwMkr0tBhjp4uoa23W-Kq-8gTk6QV5ng-ii/exec') {
+    if (!APPS_SCRIPT_URL || !APPS_SCRIPT_URL.startsWith('https://script.google.com/macros/s/')) {
       showBanner('submit-banner', 'info', 'ℹ️ Results not saved — Apps Script URL not configured yet.');
       return;
     }
@@ -647,7 +647,7 @@
   // ── CONSULTANT DASHBOARD ────────────────────────────────
 
   async function loadDomains() {
-    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxBaC6MQ3tv7_EyxSBvzZm3lEudXOj8vNwMkr0tBhjp4uoa23W-Kq-8gTk6QV5ng-ii/exec') {
+    if (!APPS_SCRIPT_URL || !APPS_SCRIPT_URL.startsWith('https://script.google.com/macros/s/')) {
       document.getElementById('domain-select').innerHTML = '<option value="">— Configure Apps Script URL first —</option>';
       return;
     }

@@ -403,7 +403,7 @@
   <div class="flame">🔥</div>
   <div>
     <h1>BOAT BURNER</h1>
-    <p>Burn the distractions. Focus on what matters.</p>
+    <p>Pairwise Prioritization — Burn the distractions. Focus on what matters.</p>
   </div>
 </header>
 
@@ -429,10 +429,10 @@
 
         <!-- Manual config upload fallback -->
         <div id="upload-fallback" class="hidden">
-          <label class="file-upload-label" for="config-file-input">
-            📂 Load a list instead
+          <label class="file-upload-label" for="priorities-file-input">
+            📂 Load a priorities.txt instead
           </label>
-          <input type="file" id="config-file-input" accept=".txt" onchange="loadConfigFile(event)" />
+          <input type="file" id="priorities-file-input" accept=".txt" onchange="loadConfigFile(event)" />
         </div>
 
         <button class="btn" onclick="startComparisons()">🔥 Start Prioritizing</button>
@@ -530,11 +530,11 @@
 
   async function autoLoadConfig() {
     try {
-      const res = await fetch('config.txt');
+      const res = await fetch('priorities.txt');
       if (!res.ok) throw new Error('Not found');
       const text = await res.text();
       applyConfig(text);
-      showBanner('success', '✅', '<strong>config.txt loaded</strong> — tasks pre-populated from your config file.');
+      showBanner('success', '✅', '<strong>priorities.txt loaded</strong> — tasks pre-populated from your priorities file.');
     } catch (e) {
       // Auto-load failed — show upload fallback silently
       document.getElementById('upload-fallback').classList.remove('hidden');

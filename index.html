@@ -19,11 +19,11 @@
       --text-light:    oklch(98.8% 0 0);
       --stroke:        oklch(75.5% 0.003 330);
       --shadow:        oklch(75.5% 0.003 330);
-      --accent-a:      oklch(71.2% 0.098 165);
-      --accent-f:      oklch(60.5% 0.198 15);
-      --accent-c:      oklch(84.2% 0.085 90);
       --neutral-100:   oklch(93.2% 0.004 265);
       --neutral-500:   oklch(52.3% 0 0);
+      --green:         oklch(71.2% 0.098 165);
+      --green-bg:      oklch(96% 0.02 165);
+      --red:           oklch(60.5% 0.198 15);
     }
 
     @media (prefers-color-scheme: dark) {
@@ -39,6 +39,7 @@
         --shadow:       oklch(16.8% 0.003 265);
         --neutral-100:  oklch(26.5% 0 0);
         --neutral-500:  oklch(75.5% 0.003 330);
+        --green-bg:     oklch(25% 0.03 165);
       }
     }
 
@@ -51,7 +52,6 @@
       flex-direction: column;
     }
 
-    /* ── HEADER ── */
     header {
       background: var(--bg-primary);
       padding: 20px 32px;
@@ -68,14 +68,8 @@
       color: var(--text-light);
       letter-spacing: 0.04em;
     }
-    header p {
-      font-size: 13px;
-      color: oklch(82.8% 0.067 225);
-      margin-top: 2px;
-      font-weight: 200;
-    }
+    header p { font-size: 13px; color: oklch(82.8% 0.067 225); margin-top: 2px; font-weight: 200; }
 
-    /* ── MAIN LAYOUT ── */
     main {
       flex: 1;
       display: flex;
@@ -99,22 +93,9 @@
       padding: 20px 28px;
       border-bottom: 1px solid var(--stroke);
     }
-    .card-header h2 {
-      font-family: "Oswald", sans-serif;
-      font-size: 20px;
-      color: var(--text-heading);
-      letter-spacing: 0.03em;
-    }
-    .card-header p {
-      font-size: 13px;
-      color: var(--neutral-500);
-      margin-top: 4px;
-    }
-
+    .card-header h2 { font-family: "Oswald", sans-serif; font-size: 20px; color: var(--text-heading); letter-spacing: 0.03em; }
+    .card-header p  { font-size: 13px; color: var(--neutral-500); margin-top: 4px; }
     .card-body { padding: 28px; }
-
-    /* ── SETUP SCREEN ── */
-    #setup-screen {}
 
     label {
       display: block;
@@ -125,6 +106,20 @@
       letter-spacing: 0.08em;
       margin-bottom: 8px;
     }
+
+    input[type="email"], input[type="text"], select {
+      width: 100%;
+      font-family: "Open Sans", sans-serif;
+      font-size: 15px;
+      background: var(--bg-app);
+      color: var(--text-default);
+      border: 1px solid var(--stroke);
+      border-radius: 4px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: var(--bg-active); }
 
     textarea {
       width: 100%;
@@ -142,11 +137,8 @@
     }
     textarea:focus { border-color: var(--bg-active); }
 
-    .hint {
-      font-size: 12px;
-      color: var(--neutral-500);
-      margin-top: 8px;
-    }
+    .form-group { margin-bottom: 20px; }
+    .hint { font-size: 12px; color: var(--neutral-500); margin-top: 8px; }
 
     .btn {
       display: inline-flex;
@@ -163,24 +155,53 @@
       padding: 13px 28px;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
-      margin-top: 20px;
+      margin-top: 8px;
     }
-    .btn:hover { background: var(--bg-active); }
+    .btn:hover  { background: var(--bg-active); }
     .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
     .btn-outline {
       background: transparent;
       border: 2px solid var(--bg-primary);
       color: var(--text-heading);
-      margin-top: 12px;
-      width: 100%;
+      margin-top: 0;
       justify-content: center;
     }
     .btn-outline:hover { background: var(--bg-hover); }
 
-    /* ── PROGRESS ── */
-    .progress-wrap {
-      margin-bottom: 24px;
+    .btn-sm { font-size: 13px; padding: 8px 16px; margin-top: 0; }
+
+    .btn-green { background: oklch(45% 0.09 165); }
+    .btn-green:hover { background: var(--green); }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
     }
+    .action-row .btn { margin-top: 0; flex: 1; justify-content: center; min-width: 140px; }
+
+    .banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .banner.success { background: var(--green-bg); color: oklch(35% 0.09 165); border: 1px solid var(--green); }
+    .banner.error   { background: oklch(97% 0.015 15); color: oklch(35% 0.1 15); border: 1px solid var(--red); }
+    .banner.info    { background: var(--neutral-100); color: var(--neutral-500); border: 1px solid var(--stroke); }
+    @media (prefers-color-scheme: dark) {
+      .banner.success { background: oklch(22% 0.04 165); color: var(--green); }
+      .banner.error   { background: oklch(22% 0.03 15); color: oklch(70% 0.15 15); }
+    }
+
+    .progress-wrap { margin-bottom: 24px; }
     .progress-label {
       display: flex;
       justify-content: space-between;
@@ -191,20 +212,9 @@
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
-    .progress-bar {
-      height: 6px;
-      background: var(--neutral-100);
-      border-radius: 100px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--bg-active);
-      border-radius: 100px;
-      transition: width 0.4s ease;
-    }
+    .progress-bar  { height: 6px; background: var(--neutral-100); border-radius: 100px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--bg-active); border-radius: 100px; transition: width 0.4s ease; }
 
-    /* ── COMPARISON SCREEN ── */
     .compare-prompt {
       font-family: "Oswald", sans-serif;
       font-size: 22px;
@@ -213,14 +223,7 @@
       margin-bottom: 28px;
       letter-spacing: 0.02em;
     }
-
-    .choice-pair {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 12px;
-      align-items: center;
-    }
-
+    .choice-pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
     .choice-btn {
       background: var(--bg-component);
       border: 2px solid var(--stroke);
@@ -247,24 +250,9 @@
       box-shadow: 0 6px 20px var(--shadow);
     }
     .choice-btn:active { transform: translateY(0); }
+    .vs-divider { font-family: "Oswald", sans-serif; font-size: 18px; color: var(--neutral-500); text-align: center; font-weight: 600; letter-spacing: 0.1em; }
 
-    .vs-divider {
-      font-family: "Oswald", sans-serif;
-      font-size: 18px;
-      color: var(--neutral-500);
-      text-align: center;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-    }
-
-    /* ── RESULTS SCREEN ── */
-    .results-intro {
-      font-size: 14px;
-      color: var(--neutral-500);
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-
+    .results-intro { font-size: 14px; color: var(--neutral-500); margin-bottom: 20px; line-height: 1.5; }
     .result-item {
       display: flex;
       align-items: center;
@@ -278,56 +266,15 @@
       animation: fadeSlide 0.4s ease both;
     }
     .result-item:hover { background: var(--neutral-100); }
-
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .rank-badge {
-      font-family: "Oswald", sans-serif;
-      font-size: 20px;
-      font-weight: 600;
-      min-width: 36px;
-      text-align: center;
-      color: var(--bg-primary);
-    }
-    .rank-badge.top { color: oklch(71.2% 0.098 165); }
+    @keyframes fadeSlide { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .rank-badge { font-family:"Oswald",sans-serif; font-size:20px; font-weight:600; min-width:36px; text-align:center; color:var(--bg-primary); }
+    .rank-badge.top    { color: var(--green); }
     .rank-badge.bottom { color: var(--neutral-500); }
+    .result-text  { flex:1; font-size:15px; font-weight:600; }
+    .result-score { font-size:12px; color:var(--neutral-500); white-space:nowrap; }
+    .score-bar-wrap { width:80px; height:4px; background:var(--neutral-100); border-radius:100px; overflow:hidden; }
+    .score-bar      { height:100%; background:var(--bg-active); border-radius:100px; }
 
-    .result-text {
-      flex: 1;
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .result-score {
-      font-size: 12px;
-      color: var(--neutral-500);
-      white-space: nowrap;
-    }
-
-    .score-bar-wrap {
-      width: 80px;
-      height: 4px;
-      background: var(--neutral-100);
-      border-radius: 100px;
-      overflow: hidden;
-    }
-    .score-bar {
-      height: 100%;
-      background: var(--bg-active);
-      border-radius: 100px;
-    }
-
-    .action-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
-    .action-row .btn { margin-top: 0; flex: 1; justify-content: center; min-width: 140px; }
-
-    /* ── COPY BUTTON ── */
     .copy-btn {
       background: transparent;
       border: 1px solid var(--stroke);
@@ -344,57 +291,48 @@
     }
     .copy-btn:hover { border-color: var(--bg-active); color: var(--bg-active); }
 
-    /* ── CONFIG BANNER ── */
-    .config-banner {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--neutral-100);
-      border: 1px solid var(--stroke);
-      border-radius: 4px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
-      font-size: 13px;
-      color: var(--neutral-500);
-    }
-    .config-banner.success { border-color: oklch(71.2% 0.098 165); color: oklch(40% 0.09 165); }
-    .config-banner.success { background: oklch(96% 0.02 165); }
-    @media (prefers-color-scheme: dark) {
-      .config-banner.success { background: oklch(25% 0.03 165); color: oklch(71.2% 0.098 165); }
-    }
-    .config-banner-icon { font-size: 16px; flex-shrink: 0; }
-    .config-banner strong { font-weight: 600; }
-
-    .file-upload-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: transparent;
-      border: 1px solid var(--stroke);
-      border-radius: 4px;
-      padding: 7px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--neutral-500);
-      cursor: pointer;
-      text-transform: uppercase;
+    /* ── DASHBOARD ── */
+    .dash-section { margin-bottom: 28px; }
+    .dash-section h3 {
+      font-family: "Oswald", sans-serif;
+      font-size: 15px;
+      color: var(--text-heading);
       letter-spacing: 0.06em;
-      transition: all 0.2s;
-      margin-top: 12px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--stroke);
     }
-    .file-upload-label:hover { border-color: var(--bg-active); color: var(--bg-active); }
-    #config-file-input { display: none; }
-
-    /* ── UTILS ── */
-    .hidden { display: none !important; }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 12px;
-      color: var(--neutral-500);
+    .respondent-table { width:100%; border-collapse:collapse; font-size:13px; margin-bottom:8px; }
+    .respondent-table th {
+      text-align:left; font-weight:600; color:var(--neutral-500);
+      text-transform:uppercase; letter-spacing:0.06em; font-size:11px;
+      padding:6px 10px; border-bottom:1px solid var(--stroke);
     }
-    footer a { color: var(--bg-active); text-decoration: none; }
+    .respondent-table td { padding:8px 10px; border-bottom:1px solid var(--neutral-100); }
+    .respondent-table tr:last-child td { border-bottom:none; }
+
+    .mash-result-item {
+      display:flex; align-items:center; gap:14px;
+      padding:12px 14px; border-radius:4px; margin-bottom:6px;
+      border:1px solid var(--neutral-100);
+      animation: fadeSlide 0.35s ease both;
+    }
+    .agreement-bar-wrap { width:90px; height:5px; background:var(--neutral-100); border-radius:100px; overflow:hidden; }
+    .agreement-bar      { height:100%; background:var(--green); border-radius:100px; }
+    .agreement-pct      { font-size:12px; color:var(--neutral-500); white-space:nowrap; min-width:36px; text-align:right; }
+
+    .spinner {
+      display:inline-block; width:14px; height:14px;
+      border:2px solid var(--neutral-100); border-top-color:var(--bg-active);
+      border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    .text-sm { font-size:13px; color:var(--neutral-500); }
+    .hidden  { display:none !important; }
+
+    footer { text-align:center; padding:20px; font-size:12px; color:var(--neutral-500); }
   </style>
 </head>
 <body>
@@ -402,7 +340,7 @@
 <header>
   <div class="flame">🔥</div>
   <div>
-    <h1>BOAT BURNER</h1>
+    <h1 id="app-title">BOAT BURNER</h1>
     <p>Pairwise Prioritization — Burn the distractions. Focus on what matters.</p>
   </div>
 </header>
@@ -410,36 +348,40 @@
 <main>
   <div class="card">
 
-    <!-- SETUP SCREEN -->
-    <div id="setup-screen">
+    <!-- SCREEN 1: EMAIL GATE -->
+    <div id="email-screen">
       <div class="card-header">
-        <h2>Enter Your Tasks</h2>
-        <p>One task per line. We'll walk you through pairwise comparisons to rank them.</p>
+        <h2>Welcome</h2>
+        <p>Enter your work email to get started. Your task list will load automatically.</p>
       </div>
       <div class="card-body">
-        <!-- Config status banner -->
-        <div id="config-banner" class="config-banner hidden">
-          <span class="config-banner-icon" id="config-banner-icon"></span>
-          <span id="config-banner-msg"></span>
+        <div id="email-banner" class="banner hidden"></div>
+        <div class="form-group">
+          <label for="email-input">Work Email Address</label>
+          <input type="email" id="email-input" placeholder="you@yourcompany.com" />
         </div>
+        <button class="btn" onclick="submitEmail()">Continue →</button>
+      </div>
+    </div>
 
-        <label for="task-input">Tasks / Items to Prioritize</label>
-        <textarea id="task-input" placeholder="Update the website&#10;Call the client&#10;Finish the proposal&#10;Review the budget&#10;Schedule team meeting"></textarea>
-        <p class="hint">Tip: 5–15 items works best. Too many pairs can get tedious!</p>
-
-        <!-- Manual config upload fallback -->
-        <div id="upload-fallback" class="hidden">
-          <label class="file-upload-label" for="priorities-file-input">
-            📂 Load a priorities.txt instead
-          </label>
-          <input type="file" id="priorities-file-input" accept=".txt" onchange="loadConfigFile(event)" />
+    <!-- SCREEN 2: SETUP -->
+    <div id="setup-screen" class="hidden">
+      <div class="card-header">
+        <h2>Your Priorities</h2>
+        <p id="setup-subtitle">Review the tasks below, then start your session.</p>
+      </div>
+      <div class="card-body">
+        <div id="setup-banner" class="banner hidden"></div>
+        <div class="form-group">
+          <label for="task-input">Tasks / Items to Prioritize</label>
+          <textarea id="task-input" placeholder="Update the website&#10;Call the client&#10;Finish the proposal&#10;Review the budget&#10;Schedule team meeting"></textarea>
+          <p class="hint">Tip: 5–15 items works best. Edit freely before starting.</p>
         </div>
-
         <button class="btn" onclick="startComparisons()">🔥 Start Prioritizing</button>
       </div>
     </div>
 
-    <!-- COMPARISON SCREEN -->
+    <!-- SCREEN 3: COMPARISON -->
     <div id="compare-screen" class="hidden">
       <div class="card-header">
         <h2>Which Is More Important?</h2>
@@ -455,9 +397,7 @@
             <div class="progress-fill" id="progress-fill" style="width:0%"></div>
           </div>
         </div>
-
         <p class="compare-prompt">Which deserves your attention first?</p>
-
         <div class="choice-pair">
           <button class="choice-btn" id="choice-a" onclick="choose('a')"></button>
           <div class="vs-divider">VS</div>
@@ -466,13 +406,14 @@
       </div>
     </div>
 
-    <!-- RESULTS SCREEN -->
+    <!-- SCREEN 4: RESULTS -->
     <div id="results-screen" class="hidden">
       <div class="card-header">
         <h2>Your Prioritized List</h2>
-        <p>Ranked by your pairwise selections — highest priority first.</p>
+        <p>Ranked by your selections — highest priority first.</p>
       </div>
       <div class="card-body">
+        <div id="submit-banner" class="banner hidden"></div>
         <p class="results-intro">
           You made <strong id="total-choices">0</strong> comparisons. Here's what matters most, in order:
         </p>
@@ -480,117 +421,154 @@
         <button class="copy-btn" onclick="copyResults()">📋 Copy to Clipboard</button>
         <div class="action-row">
           <button class="btn btn-outline" onclick="restartSameTasks()">🔄 Re-rank Same Tasks</button>
-          <button class="btn" onclick="startOver()">➕ New Task List</button>
+          <button class="btn" onclick="startOver()">➕ Start Over</button>
         </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: CONSULTANT DASHBOARD -->
+    <div id="dashboard-screen" class="hidden">
+      <div class="card-header">
+        <h2>🧑‍💼 Consultant Dashboard</h2>
+        <p>Select a company to view and aggregate their team's responses.</p>
+      </div>
+      <div class="card-body">
+
+        <div class="dash-section">
+          <h3>Select Company</h3>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:1;min-width:200px;">
+              <label for="domain-select">Company Domain</label>
+              <select id="domain-select">
+                <option value="">— Loading… —</option>
+              </select>
+            </div>
+            <button class="btn btn-sm" onclick="loadDomainRespondents()" style="padding:11px 18px;">Load</button>
+          </div>
+        </div>
+
+        <div id="respondents-section" class="dash-section hidden">
+          <h3>Respondents</h3>
+          <div id="respondents-content"></div>
+        </div>
+
+        <div id="mash-section" class="dash-section hidden">
+          <h3>Aggregated Results</h3>
+          <div id="mash-content"><p class="text-sm">Click <strong>Mash Results</strong> to aggregate all responses for this company.</p></div>
+          <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+            <button class="btn btn-green btn-sm" onclick="mashResults()">🔥 Mash Results</button>
+            <button class="btn btn-sm btn-outline" onclick="exportCSV()">⬇️ Export CSV</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
   </div>
 </main>
 
-<footer>
-  Built with ❤️ for focused people · Pairwise comparison algorithm
-</footer>
+<footer>Built with ❤️ for focused people · Pairwise comparison algorithm</footer>
 
 <script>
-  let tasks = [];
-  let pairs = [];
-  let currentPair = 0;
-  let wins = {};
+  // ═══════════════════════════════════════════════════════
+  //  CONFIGURATION  ← update these two values
+  // ═══════════════════════════════════════════════════════
+  const APPS_SCRIPT_URL   = 'YOUR_APPS_SCRIPT_URL_HERE';
+  const CONSULTANT_DOMAIN = '7signal.com';
+  // ═══════════════════════════════════════════════════════
 
-  // ── CONFIG LOADING ──────────────────────────────────────────────
+  let tasks        = [];
+  let pairs        = [];
+  let currentPair  = 0;
+  let wins         = {};
+  let userEmail    = '';
+  let userDomain   = '';
+  let companyTitle = '';
+  let mashData     = [];
 
-  function applyConfig(text) {
+  // ── EMAIL GATE ──────────────────────────────────────────
+
+  async function submitEmail() {
+    const raw = document.getElementById('email-input').value.trim().toLowerCase();
+    if (!isValidEmail(raw)) {
+      showBanner('email-banner', 'error', '⚠️ Please enter a valid email address.');
+      return;
+    }
+    userEmail  = raw;
+    userDomain = raw.split('@')[1];
+
+    // Consultant sees the dashboard
+    if (userDomain === CONSULTANT_DOMAIN) {
+      show('dashboard-screen');
+      loadDomains();
+      return;
+    }
+
+    // Everyone else: load their company's priorities file
+    showBanner('email-banner', 'info', '<span class="spinner"></span>&nbsp; Loading priorities for <strong>' + escHtml(userDomain) + '</strong>…');
+    document.querySelector('#email-screen .btn').disabled = true;
+
+    try {
+      const res = await fetch(userDomain + '.txt');
+      if (!res.ok) throw new Error('not found');
+      const text = await res.text();
+      applyPrioritiesFile(text);
+      show('setup-screen');
+      showBanner('setup-banner', 'success', '✅ Priorities loaded for <strong>' + escHtml(companyTitle || userDomain) + '</strong>.');
+    } catch (e) {
+      show('setup-screen');
+      showBanner('setup-banner', 'error',
+        '⚠️ No priorities file found for <strong>' + escHtml(userDomain) + '</strong>. ' +
+        'Ask your consultant to add <code>' + escHtml(userDomain) + '.txt</code> to the repo, or enter your tasks manually below.');
+      document.getElementById('setup-subtitle').textContent = 'Enter your tasks below to get started.';
+    } finally {
+      document.querySelector('#email-screen .btn').disabled = false;
+    }
+  }
+
+  function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+  // ── PRIORITIES FILE ─────────────────────────────────────
+
+  function applyPrioritiesFile(text) {
     const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-    if (lines.length === 0) return;
-
-    // First line is the title; rest are tasks
-    const title = lines[0];
+    if (!lines.length) return;
+    companyTitle = lines[0];
     const taskLines = lines.slice(1);
-
-    // Update header title
-    document.querySelector('header h1').textContent = title.toUpperCase();
-    document.title = title + ' — Boat Burner';
-
-    // Pre-populate textarea if tasks provided
+    document.getElementById('app-title').textContent = companyTitle.toUpperCase();
+    document.title = companyTitle + ' — Boat Burner';
     if (taskLines.length > 0) {
       document.getElementById('task-input').value = taskLines.join('\n');
     }
   }
 
-  function showBanner(type, icon, msg) {
-    const banner = document.getElementById('config-banner');
-    const iconEl = document.getElementById('config-banner-icon');
-    const msgEl  = document.getElementById('config-banner-msg');
-    banner.className = 'config-banner ' + type;
-    iconEl.textContent = icon;
-    msgEl.innerHTML = msg;
-    banner.classList.remove('hidden');
-  }
-
-  async function autoLoadConfig() {
-    try {
-      const res = await fetch('priorities.txt');
-      if (!res.ok) throw new Error('Not found');
-      const text = await res.text();
-      applyConfig(text);
-      showBanner('success', '✅', '<strong>priorities.txt loaded</strong> — tasks pre-populated from your priorities file.');
-    } catch (e) {
-      // Auto-load failed — show upload fallback silently
-      document.getElementById('upload-fallback').classList.remove('hidden');
-    }
-  }
-
-  function loadConfigFile(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      applyConfig(e.target.result);
-      showBanner('success', '✅', `<strong>${escHtml(file.name)}</strong> loaded — tasks pre-populated.`);
-      document.getElementById('upload-fallback').classList.add('hidden');
-    };
-    reader.readAsText(file);
-  }
-
-  // Run on page load
-  autoLoadConfig();
-
-  // ── PRIORITIZATION LOGIC ────────────────────────────────────────
+  // ── COMPARISON ──────────────────────────────────────────
 
   function startComparisons() {
     const raw = document.getElementById('task-input').value.trim();
     if (!raw) { alert('Please enter at least 2 tasks.'); return; }
-
     tasks = raw.split('\n').map(t => t.trim()).filter(t => t.length > 0);
     if (tasks.length < 2) { alert('Please enter at least 2 tasks.'); return; }
     if (tasks.length > 20) {
-      if (!confirm(`You have ${tasks.length} tasks — that's ${tasks.length*(tasks.length-1)/2} comparisons. Continue?`)) return;
+      if (!confirm('You have ' + tasks.length + ' tasks — that\'s ' + (tasks.length*(tasks.length-1)/2) + ' comparisons. Continue?')) return;
     }
-
     pairs = [];
-    for (let i = 0; i < tasks.length; i++) {
-      for (let j = i + 1; j < tasks.length; j++) {
+    for (let i = 0; i < tasks.length; i++)
+      for (let j = i + 1; j < tasks.length; j++)
         pairs.push([i, j]);
-      }
-    }
     pairs = pairs.sort(() => Math.random() - 0.5);
     pairs = pairs.map(p => Math.random() > 0.5 ? [p[1], p[0]] : p);
-
     wins = {};
     tasks.forEach((_, i) => wins[i] = 0);
     currentPair = 0;
-
     show('compare-screen');
     renderPair();
   }
 
   function renderPair() {
     const total = pairs.length;
-    const pct = Math.round((currentPair / total) * 100);
-    document.getElementById('progress-text').textContent = `${currentPair} of ${total}`;
-    document.getElementById('progress-fill').style.width = pct + '%';
-
+    document.getElementById('progress-text').textContent = currentPair + ' of ' + total;
+    document.getElementById('progress-fill').style.width = Math.round((currentPair / total) * 100) + '%';
     const [a, b] = pairs[currentPair];
     document.getElementById('choice-a').textContent = tasks[a];
     document.getElementById('choice-b').textContent = tasks[b];
@@ -598,16 +576,13 @@
 
   function choose(side) {
     const [a, b] = pairs[currentPair];
-    const winner = side === 'a' ? a : b;
-    wins[winner]++;
+    wins[side === 'a' ? a : b]++;
     currentPair++;
-
-    if (currentPair >= pairs.length) {
-      showResults();
-    } else {
-      renderPair();
-    }
+    if (currentPair >= pairs.length) showResults();
+    else renderPair();
   }
+
+  // ── RESULTS ─────────────────────────────────────────────
 
   function showResults() {
     const ranked = Object.keys(wins)
@@ -619,12 +594,11 @@
     list.innerHTML = '';
 
     ranked.forEach((item, rank) => {
-      const pct = Math.round((item.score / maxScore) * 100);
+      const pct        = Math.round((item.score / maxScore) * 100);
       const badgeClass = rank === 0 ? 'top' : (rank >= ranked.length - 1 ? 'bottom' : '');
-      const medal = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : (rank + 1);
-
-      const el = document.createElement('div');
-      el.className = 'result-item';
+      const medal      = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : (rank + 1);
+      const el         = document.createElement('div');
+      el.className     = 'result-item';
       el.style.animationDelay = (rank * 60) + 'ms';
       el.innerHTML = `
         <div class="rank-badge ${badgeClass}">${medal}</div>
@@ -632,18 +606,152 @@
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
           <div class="score-bar-wrap"><div class="score-bar" style="width:${pct}%"></div></div>
           <div class="result-score">${item.score} win${item.score !== 1 ? 's' : ''}</div>
-        </div>
-      `;
+        </div>`;
       list.appendChild(el);
     });
 
     document.getElementById('total-choices').textContent = pairs.length;
     show('results-screen');
+    submitResults(ranked);
   }
+
+  // ── SUBMIT TO GOOGLE SHEETS ─────────────────────────────
+
+  async function submitResults(ranked) {
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+      showBanner('submit-banner', 'info', 'ℹ️ Results not saved — Apps Script URL not configured yet.');
+      return;
+    }
+    showBanner('submit-banner', 'info', '<span class="spinner"></span>&nbsp; Saving your results…');
+    const payload = {
+      action:    'submit',
+      email:     userEmail,
+      domain:    userDomain,
+      company:   companyTitle || userDomain,
+      timestamp: new Date().toISOString(),
+      results:   ranked.map(r => ({ task: r.name, wins: r.score }))
+    };
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method:  'POST',
+        mode:    'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload)
+      });
+      showBanner('submit-banner', 'success', '✅ Results saved! Your consultant will be able to see them.');
+    } catch (e) {
+      showBanner('submit-banner', 'error', '⚠️ Could not save results. Please let your consultant know.');
+    }
+  }
+
+  // ── CONSULTANT DASHBOARD ────────────────────────────────
+
+  async function loadDomains() {
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+      document.getElementById('domain-select').innerHTML = '<option value="">— Configure Apps Script URL first —</option>';
+      return;
+    }
+    try {
+      const res  = await fetch(APPS_SCRIPT_URL + '?action=domains');
+      const data = await res.json();
+      const sel  = document.getElementById('domain-select');
+      if (!data.domains || data.domains.length === 0) {
+        sel.innerHTML = '<option value="">— No responses yet —</option>';
+        return;
+      }
+      sel.innerHTML = '<option value="">— Select a company —</option>' +
+        data.domains.map(d => '<option value="' + escHtml(d) + '">' + escHtml(d) + '</option>').join('');
+    } catch (e) {
+      document.getElementById('domain-select').innerHTML = '<option value="">— Error loading domains —</option>';
+    }
+  }
+
+  async function loadDomainRespondents() {
+    const domain = document.getElementById('domain-select').value;
+    if (!domain) return;
+    const respSection = document.getElementById('respondents-section');
+    const mashSection = document.getElementById('mash-section');
+    const respContent = document.getElementById('respondents-content');
+    respContent.innerHTML = '<span class="spinner"></span> Loading…';
+    respSection.classList.remove('hidden');
+    mashSection.classList.add('hidden');
+    try {
+      const res  = await fetch(APPS_SCRIPT_URL + '?action=respondents&domain=' + encodeURIComponent(domain));
+      const data = await res.json();
+      if (!data.respondents || data.respondents.length === 0) {
+        respContent.innerHTML = '<p class="text-sm">No responses yet for this domain.</p>';
+        return;
+      }
+      let html = '<table class="respondent-table"><thead><tr><th>Email</th><th>Submitted</th><th>Top Task</th></tr></thead><tbody>';
+      data.respondents.forEach(r => {
+        const date = r.timestamp ? new Date(r.timestamp).toLocaleDateString() : '—';
+        html += '<tr><td>' + escHtml(r.email) + '</td><td>' + date + '</td><td>' + escHtml(r.results?.[0]?.task || '—') + '</td></tr>';
+      });
+      html += '</tbody></table><p class="text-sm">' + data.respondents.length + ' respondent' + (data.respondents.length !== 1 ? 's' : '') + ' found.</p>';
+      respContent.innerHTML = html;
+      mashSection.classList.remove('hidden');
+      document.getElementById('mash-content').innerHTML = '<p class="text-sm">Click <strong>Mash Results</strong> to aggregate all responses for this company.</p>';
+    } catch (e) {
+      respContent.innerHTML = '<p class="text-sm" style="color:var(--red)">Error loading respondents.</p>';
+    }
+  }
+
+  async function mashResults() {
+    const domain = document.getElementById('domain-select').value;
+    if (!domain) return;
+    const btn = document.querySelector('.btn-green');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Mashing…';
+    try {
+      const res  = await fetch(APPS_SCRIPT_URL + '?action=mash&domain=' + encodeURIComponent(domain));
+      const data = await res.json();
+      if (!data.mash || data.mash.length === 0) {
+        document.getElementById('mash-content').innerHTML = '<p class="text-sm">No data to mash yet.</p>';
+        return;
+      }
+      mashData = data.mash;
+      const maxWins = data.mash[0].totalWins || 1;
+      let html = '<p class="text-sm" style="margin-bottom:12px;">Aggregated across <strong>' + data.respondentCount + '</strong> respondent' + (data.respondentCount !== 1 ? 's' : '') + '.</p>';
+      data.mash.forEach((item, rank) => {
+        const pct   = Math.round((item.totalWins / maxWins) * 100);
+        const medal = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : (rank + 1);
+        html += '<div class="mash-result-item" style="animation-delay:' + (rank*50) + 'ms">' +
+          '<div class="rank-badge ' + (rank === 0 ? 'top' : '') + '">' + medal + '</div>' +
+          '<div class="result-text">' + escHtml(item.task) + '</div>' +
+          '<div class="agreement-bar-wrap"><div class="agreement-bar" style="width:' + pct + '%"></div></div>' +
+          '<div class="agreement-pct">' + item.agreementPct + '%</div>' +
+          '<div class="result-score" style="min-width:60px;text-align:right">' + item.totalWins + ' wins</div>' +
+          '</div>';
+      });
+      document.getElementById('mash-content').innerHTML = html;
+    } catch (e) {
+      document.getElementById('mash-content').innerHTML = '<p class="text-sm" style="color:var(--red)">Error aggregating results.</p>';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '🔥 Mash Results';
+    }
+  }
+
+  function exportCSV() {
+    if (!mashData || mashData.length === 0) { alert('Run Mash first to generate results.'); return; }
+    const domain = document.getElementById('domain-select').value;
+    const rows   = [['Rank', 'Task', 'Total Wins', 'Agreement %']];
+    mashData.forEach((item, i) => rows.push([i + 1, item.task, item.totalWins, item.agreementPct + '%']));
+    const csv  = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'boat-burner-' + domain + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── UTILITIES ───────────────────────────────────────────
 
   function copyResults() {
     const items = document.querySelectorAll('.result-text');
-    const text = Array.from(items).map((el, i) => `${i+1}. ${el.textContent}`).join('\n');
+    const text  = Array.from(items).map((el, i) => (i + 1) + '. ' + el.textContent).join('\n');
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.querySelector('.copy-btn');
       btn.textContent = '✅ Copied!';
@@ -653,14 +761,12 @@
 
   function restartSameTasks() {
     pairs = [];
-    for (let i = 0; i < tasks.length; i++) {
-      for (let j = i + 1; j < tasks.length; j++) {
+    for (let i = 0; i < tasks.length; i++)
+      for (let j = i + 1; j < tasks.length; j++)
         pairs.push([i, j]);
-      }
-    }
     pairs = pairs.sort(() => Math.random() - 0.5);
     pairs = pairs.map(p => Math.random() > 0.5 ? [p[1], p[0]] : p);
-    wins = {};
+    wins  = {};
     tasks.forEach((_, i) => wins[i] = 0);
     currentPair = 0;
     show('compare-screen');
@@ -668,20 +774,37 @@
   }
 
   function startOver() {
-    document.getElementById('task-input').value = '';
-    show('setup-screen');
+    userEmail = ''; userDomain = ''; companyTitle = '';
+    document.getElementById('email-input').value = '';
+    document.getElementById('task-input').value  = '';
+    document.getElementById('app-title').textContent = 'BOAT BURNER';
+    document.title = 'Boat Burner — Prioritization Tool';
+    hideBanner('email-banner');
+    hideBanner('setup-banner');
+    show('email-screen');
   }
 
   function show(id) {
-    ['setup-screen','compare-screen','results-screen'].forEach(s => {
-      document.getElementById(s).classList.toggle('hidden', s !== id);
-    });
+    ['email-screen','setup-screen','compare-screen','results-screen','dashboard-screen']
+      .forEach(s => document.getElementById(s).classList.toggle('hidden', s !== id));
   }
+
+  function showBanner(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className = 'banner ' + type;
+    el.innerHTML = msg;
+    el.classList.remove('hidden');
+  }
+
+  function hideBanner(id) { document.getElementById(id).classList.add('hidden'); }
 
   function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-</script>
 
+  document.getElementById('email-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitEmail();
+  });
+</script>
 </body>
 </html>

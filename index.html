@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boat Burner — Prioritization Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Open+Sans:wght@200;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-app:        oklch(98.8% 0 0);
+      --bg-component:  oklch(100% 0 0);
+      --bg-primary:    oklch(30.93% 0.0641 233.2);
+      --bg-active:     oklch(55.68% 0.1108 229.9);
+      --bg-hover:      oklch(82.8% 0.067 225);
+      --text-default:  oklch(21.5% 0.002 75);
+      --text-heading:  oklch(30.93% 0.0641 233.2);
+      --text-light:    oklch(98.8% 0 0);
+      --stroke:        oklch(75.5% 0.003 330);
+      --shadow:        oklch(75.5% 0.003 330);
+      --accent-a:      oklch(71.2% 0.098 165);
+      --accent-f:      oklch(60.5% 0.198 15);
+      --accent-c:      oklch(84.2% 0.085 90);
+      --neutral-100:   oklch(93.2% 0.004 265);
+      --neutral-500:   oklch(52.3% 0 0);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-app:       oklch(21.5% 0.002 75);
+        --bg-component: oklch(31.8% 0 0);
+        --bg-primary:   oklch(55.68% 0.1108 229.9);
+        --bg-active:    oklch(68.2% 0.112 225);
+        --bg-hover:     oklch(30.93% 0.0641 233.2);
+        --text-default: oklch(98.8% 0 0);
+        --text-heading: oklch(82.8% 0.067 225);
+        --stroke:       oklch(26.5% 0 0);
+        --shadow:       oklch(16.8% 0.003 265);
+        --neutral-100:  oklch(26.5% 0 0);
+        --neutral-500:  oklch(75.5% 0.003 330);
+      }
+    }
+
+    body {
+      font-family: "Open Sans", sans-serif;
+      background: var(--bg-app);
+      color: var(--text-default);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--bg-primary);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .flame { font-size: 28px; }
+    header h1 {
+      font-family: "Oswald", sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-light);
+      letter-spacing: 0.04em;
+    }
+    header p {
+      font-size: 13px;
+      color: oklch(82.8% 0.067 225);
+      margin-top: 2px;
+      font-weight: 200;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 16px;
+    }
+
+    .card {
+      background: var(--bg-component);
+      border: 1px solid var(--stroke);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px var(--shadow);
+      width: 100%;
+      max-width: 680px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: var(--neutral-100);
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--stroke);
+    }
+    .card-header h2 {
+      font-family: "Oswald", sans-serif;
+      font-size: 20px;
+      color: var(--text-heading);
+      letter-spacing: 0.03em;
+    }
+    .card-header p {
+      font-size: 13px;
+      color: var(--neutral-500);
+      margin-top: 4px;
+    }
+
+    .card-body { padding: 28px; }
+
+    /* ── SETUP SCREEN ── */
+    #setup-screen {}
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--neutral-500);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      font-family: "Open Sans", sans-serif;
+      font-size: 15px;
+      background: var(--bg-app);
+      color: var(--text-default);
+      border: 1px solid var(--stroke);
+      border-radius: 4px;
+      padding: 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    textarea:focus { border-color: var(--bg-active); }
+
+    .hint {
+      font-size: 12px;
+      color: var(--neutral-500);
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-primary);
+      color: var(--text-light);
+      font-family: "Oswald", sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      border: none;
+      border-radius: 4px;
+      padding: 13px 28px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 20px;
+    }
+    .btn:hover { background: var(--bg-active); }
+    .btn:active { transform: scale(0.98); }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--bg-primary);
+      color: var(--text-heading);
+      margin-top: 12px;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn-outline:hover { background: var(--bg-hover); }
+
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      margin-bottom: 24px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--neutral-500);
+      margin-bottom: 6px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .progress-bar {
+      height: 6px;
+      background: var(--neutral-100);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--bg-active);
+      border-radius: 100px;
+      transition: width 0.4s ease;
+    }
+
+    /* ── COMPARISON SCREEN ── */
+    .compare-prompt {
+      font-family: "Oswald", sans-serif;
+      font-size: 22px;
+      color: var(--text-heading);
+      text-align: center;
+      margin-bottom: 28px;
+      letter-spacing: 0.02em;
+    }
+
+    .choice-pair {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .choice-btn {
+      background: var(--bg-component);
+      border: 2px solid var(--stroke);
+      border-radius: 8px;
+      padding: 20px 16px;
+      font-family: "Open Sans", sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-default);
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+    .choice-btn:hover {
+      border-color: var(--bg-active);
+      background: var(--bg-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--shadow);
+    }
+    .choice-btn:active { transform: translateY(0); }
+
+    .vs-divider {
+      font-family: "Oswald", sans-serif;
+      font-size: 18px;
+      color: var(--neutral-500);
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── RESULTS SCREEN ── */
+    .results-intro {
+      font-size: 14px;
+      color: var(--neutral-500);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 16px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      border: 1px solid var(--neutral-100);
+      background: var(--bg-component);
+      transition: background 0.15s;
+      animation: fadeSlide 0.4s ease both;
+    }
+    .result-item:hover { background: var(--neutral-100); }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .rank-badge {
+      font-family: "Oswald", sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      min-width: 36px;
+      text-align: center;
+      color: var(--bg-primary);
+    }
+    .rank-badge.top { color: oklch(71.2% 0.098 165); }
+    .rank-badge.bottom { color: var(--neutral-500); }
+
+    .result-text {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .result-score {
+      font-size: 12px;
+      color: var(--neutral-500);
+      white-space: nowrap;
+    }
+
+    .score-bar-wrap {
+      width: 80px;
+      height: 4px;
+      background: var(--neutral-100);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .score-bar {
+      height: 100%;
+      background: var(--bg-active);
+      border-radius: 100px;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .action-row .btn { margin-top: 0; flex: 1; justify-content: center; min-width: 140px; }
+
+    /* ── COPY BUTTON ── */
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--stroke);
+      border-radius: 4px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--neutral-500);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: all 0.2s;
+      margin-top: 16px;
+    }
+    .copy-btn:hover { border-color: var(--bg-active); color: var(--bg-active); }
+
+    /* ── UTILS ── */
+    .hidden { display: none !important; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--neutral-500);
+    }
+    footer a { color: var(--bg-active); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flame">🔥</div>
+  <div>
+    <h1>BOAT BURNER</h1>
+    <p>Pairwise Prioritization — Burn the distractions. Focus on what matters.</p>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+
+    <!-- SETUP SCREEN -->
+    <div id="setup-screen">
+      <div class="card-header">
+        <h2>Enter Your Tasks</h2>
+        <p>One task per line. We'll walk you through pairwise comparisons to rank them.</p>
+      </div>
+      <div class="card-body">
+        <label for="task-input">Tasks / Items to Prioritize</label>
+        <textarea id="task-input" placeholder="Update the website&#10;Call the client&#10;Finish the proposal&#10;Review the budget&#10;Schedule team meeting"></textarea>
+        <p class="hint">Tip: 5–15 items works best. Too many pairs can get tedious!</p>
+        <button class="btn" onclick="startComparisons()">🔥 Start Prioritizing</button>
+      </div>
+    </div>
+
+    <!-- COMPARISON SCREEN -->
+    <div id="compare-screen" class="hidden">
+      <div class="card-header">
+        <h2>Which Is More Important?</h2>
+        <p>Click the item that should be prioritized higher.</p>
+      </div>
+      <div class="card-body">
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Progress</span>
+            <span id="progress-text">0 of 0</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <p class="compare-prompt">Which deserves your attention first?</p>
+
+        <div class="choice-pair">
+          <button class="choice-btn" id="choice-a" onclick="choose('a')"></button>
+          <div class="vs-divider">VS</div>
+          <button class="choice-btn" id="choice-b" onclick="choose('b')"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="results-screen" class="hidden">
+      <div class="card-header">
+        <h2>Your Prioritized List</h2>
+        <p>Ranked by your pairwise selections — highest priority first.</p>
+      </div>
+      <div class="card-body">
+        <p class="results-intro">
+          You made <strong id="total-choices">0</strong> comparisons. Here's what matters most, in order:
+        </p>
+        <div id="results-list"></div>
+        <button class="copy-btn" onclick="copyResults()">📋 Copy to Clipboard</button>
+        <div class="action-row">
+          <button class="btn btn-outline" onclick="restartSameTasks()">🔄 Re-rank Same Tasks</button>
+          <button class="btn" onclick="startOver()">➕ New Task List</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  Built with ❤️ for focused people · Pairwise comparison algorithm
+</footer>
+
+<script>
+  let tasks = [];
+  let pairs = [];
+  let currentPair = 0;
+  let wins = {};
+
+  function startComparisons() {
+    const raw = document.getElementById('task-input').value.trim();
+    if (!raw) { alert('Please enter at least 2 tasks.'); return; }
+
+    tasks = raw.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+    if (tasks.length < 2) { alert('Please enter at least 2 tasks.'); return; }
+    if (tasks.length > 20) {
+      if (!confirm(`You have ${tasks.length} tasks — that's ${tasks.length*(tasks.length-1)/2} comparisons. Continue?`)) return;
+    }
+
+    // Build all unique pairs
+    pairs = [];
+    for (let i = 0; i < tasks.length; i++) {
+      for (let j = i + 1; j < tasks.length; j++) {
+        pairs.push([i, j]);
+      }
+    }
+    // Shuffle pairs for variety
+    pairs = pairs.sort(() => Math.random() - 0.5);
+
+    // Randomize which side each item appears on
+    pairs = pairs.map(p => Math.random() > 0.5 ? [p[1], p[0]] : p);
+
+    wins = {};
+    tasks.forEach((_, i) => wins[i] = 0);
+    currentPair = 0;
+
+    show('compare-screen');
+    renderPair();
+  }
+
+  function renderPair() {
+    const total = pairs.length;
+    const pct = Math.round((currentPair / total) * 100);
+    document.getElementById('progress-text').textContent = `${currentPair} of ${total}`;
+    document.getElementById('progress-fill').style.width = pct + '%';
+
+    const [a, b] = pairs[currentPair];
+    document.getElementById('choice-a').textContent = tasks[a];
+    document.getElementById('choice-b').textContent = tasks[b];
+  }
+
+  function choose(side) {
+    const [a, b] = pairs[currentPair];
+    const winner = side === 'a' ? a : b;
+    wins[winner]++;
+    currentPair++;
+
+    if (currentPair >= pairs.length) {
+      showResults();
+    } else {
+      renderPair();
+    }
+  }
+
+  function showResults() {
+    const ranked = Object.keys(wins)
+      .map(i => ({ index: parseInt(i), name: tasks[i], score: wins[i] }))
+      .sort((a, b) => b.score - a.score);
+
+    const maxScore = ranked[0]?.score || 1;
+    const list = document.getElementById('results-list');
+    list.innerHTML = '';
+
+    ranked.forEach((item, rank) => {
+      const pct = Math.round((item.score / maxScore) * 100);
+      const badgeClass = rank === 0 ? 'top' : (rank >= ranked.length - 1 ? 'bottom' : '');
+      const medal = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : (rank + 1);
+
+      const el = document.createElement('div');
+      el.className = 'result-item';
+      el.style.animationDelay = (rank * 60) + 'ms';
+      el.innerHTML = `
+        <div class="rank-badge ${badgeClass}">${medal}</div>
+        <div class="result-text">${escHtml(item.name)}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <div class="score-bar-wrap"><div class="score-bar" style="width:${pct}%"></div></div>
+          <div class="result-score">${item.score} win${item.score !== 1 ? 's' : ''}</div>
+        </div>
+      `;
+      list.appendChild(el);
+    });
+
+    document.getElementById('total-choices').textContent = pairs.length;
+    show('results-screen');
+  }
+
+  function copyResults() {
+    const items = document.querySelectorAll('.result-text');
+    const text = Array.from(items).map((el, i) => `${i+1}. ${el.textContent}`).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy to Clipboard', 2000);
+    });
+  }
+
+  function restartSameTasks() {
+    // Rebuild pairs from same task list but reshuffled
+    pairs = [];
+    for (let i = 0; i < tasks.length; i++) {
+      for (let j = i + 1; j < tasks.length; j++) {
+        pairs.push([i, j]);
+      }
+    }
+    pairs = pairs.sort(() => Math.random() - 0.5);
+    pairs = pairs.map(p => Math.random() > 0.5 ? [p[1], p[0]] : p);
+    wins = {};
+    tasks.forEach((_, i) => wins[i] = 0);
+    currentPair = 0;
+    show('compare-screen');
+    renderPair();
+  }
+
+  function startOver() {
+    document.getElementById('task-input').value = '';
+    show('setup-screen');
+  }
+
+  function show(id) {
+    ['setup-screen','compare-screen','results-screen'].forEach(s => {
+      document.getElementById(s).classList.toggle('hidden', s !== id);
+    });
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+
+</body>
+</html>
